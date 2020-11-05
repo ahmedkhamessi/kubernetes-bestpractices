@@ -239,8 +239,8 @@ az network application-gateway waf-config set \
 $ az ad sp create-for-rbac -n "akhamessiakssp" --skip-assignment
 
 ##Output
-APPID="f5046eec-3559-4689-8708-0ca91f2b5a19"
-PASSWORD="0mhKkJRNAzHBQE4-OQCGG9-QYeVD.JCD1w"
+APPID="xxxxxxxxxxxxxxxxxxxxxx"
+PASSWORD="xxxxxxxxxxxxxxxxxxx"
 
 ### get the vnet ID
 VNETID=$(az network vnet show -g $RG --name $AKS_VNET_NAME --query id -o tsv)
