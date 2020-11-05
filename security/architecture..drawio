@@ -1,0 +1,79 @@
+<mxfile host="" modified="2020-11-05T11:42:15.510Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.44.2 Chrome/78.0.3904.130 Electron/7.1.11 Safari/537.36" etag="rUxM3Ogw3oeQvz9tQW-H" version="13.1.3">
+    <diagram id="6hGFLwfOUW9BJ-s0fimq" name="Page-1">
+        <mxGraphModel dx="2176" dy="524" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="" style="whiteSpace=wrap;html=1;aspect=fixed;fontColor=#FF0000;strokeWidth=3;" vertex="1" parent="1">
+                    <mxGeometry x="850" y="60" width="580" height="580" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="Az-Firewall-Subnet" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=1 1;strokeWidth=2;fillColor=none;gradientColor=#ffffff;" vertex="1" parent="1">
+                    <mxGeometry x="910" y="90" width="450" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="Management-Subnet" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=1 1;strokeWidth=2;fillColor=none;gradientColor=#ffffff;" vertex="1" parent="1">
+                    <mxGeometry x="910" y="260" width="450" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="WAF - ApplicationGateway-Subnet" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=1 1;strokeWidth=2;fillColor=none;gradientColor=#ffffff;" vertex="1" parent="1">
+                    <mxGeometry x="910" y="434.5" width="450" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px&quot;&gt;Hub-Vnet&lt;/font&gt;&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;dashPattern=1 1;fontColor=#FF0000;" vertex="1" parent="1">
+                    <mxGeometry x="885" y="650" width="500" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="" style="whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=4;fillColor=#000000;gradientColor=none;fontColor=#FF0000;" vertex="1" parent="1">
+                    <mxGeometry x="-110" y="60" width="580" height="580" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px&quot;&gt;AKS-Vnet&lt;/font&gt;&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;dashed=1;dashPattern=1 1;fontColor=#FF0000;" vertex="1" parent="1">
+                    <mxGeometry x="-70" y="650" width="500" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="AKS-Default-Subnet" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=1 1;strokeWidth=2;fillColor=none;gradientColor=#ffffff;" vertex="1" parent="1">
+                    <mxGeometry x="-60" y="120" width="450" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="AKS-Ingress-Subnet" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=1 1;strokeWidth=2;fillColor=none;gradientColor=#ffffff;" vertex="1" parent="1">
+                    <mxGeometry x="-60" y="380" width="450" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="&lt;font style=&quot;font-size: 14px&quot; color=&quot;#009900&quot;&gt;Peeerin - Gateway Transit&lt;/font&gt;" style="endArrow=classic;startArrow=classic;html=1;fontColor=#FF0000;entryX=0.009;entryY=0.456;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" target="2">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="470" y="324" as="sourcePoint"/>
+                        <mxPoint x="600" y="240" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="14" value="" style="fontColor=#0066CC;verticalAlign=top;verticalLabelPosition=bottom;labelPosition=center;align=center;html=1;outlineConnect=0;fillColor=#CCCCCC;strokeColor=#6881B3;gradientColor=none;gradientDirection=north;strokeWidth=2;shape=mxgraph.networks.firewall;" vertex="1" parent="1">
+                    <mxGeometry x="930" y="110" width="130" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.virtual_network;pointerEvents=1;fontColor=#FF0000;" vertex="1" parent="1">
+                    <mxGeometry x="340" y="502.5" width="50" height="27.500000000000004" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.virtual_network;pointerEvents=1;fontColor=#FF0000;" vertex="1" parent="1">
+                    <mxGeometry x="340" y="240" width="50" height="27.500000000000004" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.virtual_network;pointerEvents=1;fontColor=#FF0000;" vertex="1" parent="1">
+                    <mxGeometry x="1300" y="550" width="50" height="27.500000000000004" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.virtual_network;pointerEvents=1;fontColor=#FF0000;" vertex="1" parent="1">
+                    <mxGeometry x="1310" y="380" width="50" height="27.500000000000004" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.virtual_network;pointerEvents=1;fontColor=#FF0000;" vertex="1" parent="1">
+                    <mxGeometry x="1310" y="210" width="50" height="27.500000000000004" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.virtual_network;pointerEvents=1;fontColor=#FF0000;" vertex="1" parent="1">
+                    <mxGeometry x="414" y="610" width="50" height="27.500000000000004" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.virtual_network;pointerEvents=1;fontColor=#FF0000;" vertex="1" parent="1">
+                    <mxGeometry x="1380" y="610" width="50" height="27.500000000000004" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.worker_role;fontColor=#FF0000;" vertex="1" parent="1">
+                    <mxGeometry x="1200" y="100" width="80" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.worker_role;fontColor=#FF0000;" vertex="1" parent="1">
+                    <mxGeometry x="1201" y="170" width="80" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" value="PIP" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FF0000;" vertex="1" parent="1">
+                    <mxGeometry x="1280" y="120" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" value="Internal IP" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FF0000;" vertex="1" parent="1">
+                    <mxGeometry x="1281" y="180" width="40" height="20" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
