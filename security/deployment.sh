@@ -160,7 +160,7 @@ az network vnet subnet update \
 
 ####create the firewall rules
 
-###create network rule, the rule is very permissive for demo reasons only, this can be restricted to the AKS API server IP/FQDN
+###create network rule, In production should be restricted to the AKS API server IP/FQDN
 $ az network firewall network-rule create \
 -g $RG \
 -f $FW_NAME \
@@ -197,4 +197,253 @@ az network firewall application-rule create \
         'acs-mirror.azureedge.net' \
         'security.ubuntu.com' \
         'azure.archive.ubuntu.com' \
-        'changelogs.ubuntu.com' 
+        'changelogs.ubuntu.com'
+
+###Deploy Azure Application Gateway
+
+###create a public IP for the Application Gateway which will act as a WAF
+$ az network public-ip create \
+  --resource-group $RG \
+  --name $APPGW_PIP_NAME \
+  --allocation-method Static \
+  --sku Standard
+
+### create the Application Gateway, we will create an empty gateway and we will update the backend pool later when we create our first application
+### I'm creating a plain HTTP WAF for demo purposes only, in your case this would be TLS
+
+$ az network application-gateway create \
+  --name $APPGW_NAME \
+  --location $LOCATION \
+  --resource-group $RG \
+  --vnet-name $HUB_VNET_NAME \
+  --subnet $WAF_SUBNET_NAME \
+  --capacity 1 \
+  --sku WAF_v2 \
+  --http-settings-cookie-based-affinity Disabled \
+  --frontend-port 80 \
+  --http-settings-port 80 \
+  --http-settings-protocol Http \
+  --public-ip-address $APPGW_PIP_NAME
+
+### update the WAF rules
+az network application-gateway waf-config set \
+  --enabled true \
+  --gateway-name $APPGW_NAME \
+  --resource-group $RG \
+  --firewall-mode Detection \
+  --rule-set-version 3.0
+
+#Create the AKS cluster
+
+### first we create the SP that we will use and assign permissions on the VNET
+$ az ad sp create-for-rbac -n "akhamessiakssp" --skip-assignment
+
+##Output
+APPID="f5046eec-3559-4689-8708-0ca91f2b5a19"
+PASSWORD="0mhKkJRNAzHBQE4-OQCGG9-QYeVD.JCD1w"
+
+### get the vnet ID
+VNETID=$(az network vnet show -g $RG --name $AKS_VNET_NAME --query id -o tsv)
+
+# Assign SP Permission to VNET
+$ az role assignment create --assignee $APPID --scope $VNETID --role Contributor
+
+# View Role Assignment
+$ az role assignment list --assignee $APPID --all -o table
+
+## get the subnet ID of AKS and your Current IP so you can access the cluster 
+$ CURRENT_IP=$(dig @resolver1.opendns.com ANY myip.opendns.com +short)
+$ AKS_VNET_SUBNET_ID=$(az network vnet subnet show --name $AKS_NODES_SUBNET_NAME -g $RG --vnet-name $AKS_VNET_NAME --query "id" -o tsv)
+
+
+### create the cluster
+az aks create \
+-g $RG \
+-n $AKS_CLUSTER_NAME \
+-l $LOCATION \
+--node-count 2 \
+--node-vm-size Standard_B2s \
+--network-plugin azure \
+--generate-ssh-keys \
+--service-cidr 10.0.0.0/16 \
+--dns-service-ip 10.0.0.10 \
+--docker-bridge-address 172.22.0.1/29 \
+--vnet-subnet-id $AKS_VNET_SUBNET_ID \
+--load-balancer-sku standard \
+--outbound-type userDefinedRouting \
+--api-server-authorized-ip-ranges $FW_PUBLIC_IP/32,$CURRENT_IP/32 \
+--service-principal $APPID \
+--client-secret $PASSWORD 
+
+### get the credentials 
+$ az aks get-credentials -n $AKS_CLUSTER_NAME -g $RG
+
+#[Optional]
+###Create the jump box in the management subnet
+
+#####Create the Jump box and create
+az vm create \
+-n jumpbox \
+-g $RG \
+--vnet-name $HUB_VNET_NAME \
+--subnet $MGMT_SUBNET_NAME \
+--image UbuntuLTS \
+--location $LOCATION \
+--size Standard_B1s \
+--public-ip-address "" \
+--admin-username adminusername \
+--ssh-key-values ~/.ssh/id_rsa.pub
+
+
+### get the IP of your jumpbox
+$ JUMPBOX_IP=$(az vm show --show-details  --name jumpbox -g $RG --query "privateIps" -o tsv)
+
+
+###create a DNAT rule in the firewall to access the jump box, the role is open for sources but you can lock it down obviously
+
+$ az network firewall nat-rule create \
+--collection-name jumpbox \
+--destination-addresses $FW_PUBLIC_IP \
+--destination-ports 22 \
+--firewall-name $FW_NAME \
+--name inboundrule \
+--protocols Any \
+--resource-group $RG \
+--source-addresses '*' \
+--translated-port 22 \
+--action Dnat \
+--priority 110 \
+--translated-address $JUMPBOX_IP
+
+## SSH to the Jump Box
+$ ssh adminusername@$FW_PUBLIC_IP -i ~/.ssh/id_rsa
+
+
+#install the tools in
+#install kubectl
+sudo apt-get update && sudo apt-get install -y apt-transport-https
+echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubectl
+
+
+#install azure CLI
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+#login to your account
+az login 
+
+#get the AKS credintials 
+az aks get-credentials -n $AKS_CLUSTER_NAME -g $RG
+
+#test 
+kubectl get nodes
+
+
+#Create a test application
+cat << EOF | kubectl apply -f - 
+apiVersion: v1
+kind: Service
+metadata:
+  name: internal-app
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    service.beta.kubernetes.io/azure-load-balancer-internal-subnet: "aks-ingress-subnet"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: internal-app
+EOF
+
+EXTERNAL_ILB_IP=192.168.34.4
+
+cat << EOF | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azure-vote-back
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: azure-vote-back
+  template:
+    metadata:
+      labels:
+        app: azure-vote-back
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: azure-vote-back
+        image: redis
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        ports:
+        - containerPort: 6379
+          name: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: azure-vote-back
+spec:
+  ports:
+  - port: 6379
+  selector:
+    app: azure-vote-back
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: internal-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: internal-app
+  template:
+    metadata:
+      labels:
+        app: internal-app
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: azure-vote-front
+        image: microsoft/azure-vote-front:v1
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        ports:
+        - containerPort: 80
+        env:
+        - name: REDIS
+          value: "azure-vote-back"
+EOF
+
+###Configure APP GW and test
+### now we need to update the backend pool of the APP GW with our service EXTERNAL IP
+$ az network application-gateway address-pool update \
+ --servers $EXTERNAL_ILB_IP \
+ --gateway-name $APPGW_NAME \
+ -g $RG \
+ -n appGatewayBackendPool
+
+##Test the setup
+### get the Public IP of the APP GW
+$ WAF_PUBLIC_IP=$(az network public-ip show --resource-group $RG --name $APPGW_PIP_NAME --query [ipAddress] --output tsv)
+
+### test using Curl 
+$ curl $WAF_PUBLIC_IP
