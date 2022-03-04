@@ -3,7 +3,7 @@ This repo contains demos and concepts for Kubernetes best practices from differe
 
 ### Content 
 * [Security Best Practices](security)
-
+* [Multitenancy - AKS](tenancy)
 
 ### Disclaimer
 
