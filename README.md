@@ -3,3 +3,8 @@ This repo contains demos and concepts for Kubernetes best practices from differe
 
 ### Content 
 * [Security Best Practices](security)
+
+
+### Disclaimer
+
+This repository and it's content are all personal effort and private documentation methode of my findings and learning, there is no SLA bound to it and should in no case be used in production environment.
