@@ -1,1 +1,1 @@
-This is a work in progress
+![Architecture](aks-multitenancy.png)
